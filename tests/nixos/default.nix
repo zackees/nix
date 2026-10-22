@@ -30,6 +30,15 @@ let
       hostPkgs = pkgs;
       defaults = {
         nixpkgs.pkgs = pkgs;
+        # Keep HTTP fixture servers patched without moving the compatibility-test inputs.
+        services.nginx.package = lib.mkDefault (pkgs.nginx.overrideAttrs (_: {
+          version = "1.30.6";
+          nginxVersion = "1.30.6";
+          src = pkgs.fetchurl {
+            url = "https://nginx.org/download/nginx-1.30.6.tar.gz";
+            hash = "sha256-PPRvXtdQTUYBJYZre+qZ+zV/MdiH4uY7NVAzEOm4tsg=";
+          };
+        }));
         nix.checkAllErrors = false;
         # TODO: decide which packaging stage to use. `nix-cli` is efficient, but not the same as the user-facing `everything.nix` package (`default`). Perhaps a good compromise is `everything.nix` + `noTests` defined above?
         nix.package = nixComponents.nix-cli;
